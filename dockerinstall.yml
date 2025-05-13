@@ -1,0 +1,28 @@
+---
+- name: Docker install and run container
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Docker and Git
+      apt:
+        name:
+          - docker.io
+          - git
+        state: latest
+        update_cache: yes
+
+    - name: Clone GitHub repository
+      git:
+        repo: https://github.com/LeelaKrishna0201/ansibletask.git
+        dest: /opt/ansibletask
+        version: main
+
+    - name: Build Docker image
+      command: docker build -t newimg:v1 .
+      args:
+        chdir: /opt/ansibletask
+
+    - name: Run Docker container
+      command: docker run -d --name newimg -p 80:80 newimg:v1
+
